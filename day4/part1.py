@@ -1,3 +1,45 @@
+from typing import List
+
+
+class Board:
+    def __init__(self, all_numbers, grid):
+        self.all_numbers = all_numbers
+        self.grid = grid
+        self.already_won = False
+
+    def contains(self, draw):
+        return draw in self.all_numbers
+
+    def is_complete_row(self, row):
+        if self.grid[row][0] == 'x' and self.grid[row].count(self.grid[row][0]) == 5:
+            self.already_won = True
+            return True
+        return False
+
+    def is_complete_col(self, col):
+        column = []
+        for row in range(5):
+            column.append(self.grid[row][col])
+        if column[0] == 'x' and column.count(column[0]) == len(column):
+            self.already_won = True
+            return True
+        return False
+
+    def is_marked_and_winner(self, draw):
+        for row in range(len(self.grid)):
+            for col in range(len(self.grid[0])):
+                if self.grid[row][col] == draw:
+                    self.grid[row][col] = 'x'
+                    return self.is_complete_col(col) or self.is_complete_row(row)
+        return False
+
+    def sum_non_marked(self):
+        total = 0
+        for row in range(len(self.grid)):
+            for col in range(len(self.grid[0])):
+                if self.grid[row][col] != 'x':
+                    total += int(self.grid[row][col])
+        return total
 
 
 def read_input(filename):
@@ -8,87 +50,46 @@ def read_input(filename):
     return lines
 
 
-def generate_grids(lines):
-    grids = []
-    current_grid = []
+def generate_boards(lines):
+    current_board = []
     all_numbers = set()
-    bingo_boards = []
-    for i in range(len(lines)):
-        if not lines[i] and not current_grid:
+    boards: List[Board] = []
+    for line in lines[1:]:
+        if not line and not current_board:
             continue
-        if not lines[i]:
-            grids.append(current_grid)
-            # bingo_boards.append(Bingo(all_numbers, current_grid))
-            current_grid = []
+        if not line:
+            boards.append(Board(all_numbers, current_board))
+            current_board = []
             all_numbers = set()
             continue
-        row = lines[i].split()
-        current_grid.append(row)
-        all_numbers.add(row)
-    # bingo_boards.append(Bingo(all_numbers, current_grid))
-    grids.append(current_grid)
-    return grids
+        row = line.split()
+        current_board.append(row)
+        all_numbers.update(row)
+    boards.append(Board(all_numbers, current_board))
+    return lines[0].split(','), boards
 
 
-def marked_field(draw, grid):
-    for row in range(len(grid)):
-        for col in range(len(grid[0])):
-            if grid[row][col] == draw:
-                grid[row][col] = 'x'
-                return True
-    return False
-
-
-def is_winner(grid):
-    for row in grid:
-        if row[0] == 'x' and row.count(row[0]) == len(row):
-            return True
-
-    for col in range(len(grid[0])):
-        column = []
-        for row in range(len(grid)):
-            column.append(grid[row][col])
-        if column[0] == 'x' and column.count(column[0]) == len(column):
-            return True
-
-    return False
-
-
-def sum_non_marked(grid):
-    total = 0
-    for row in range(len(grid)):
-        for col in range(len(grid[0])):
-            if grid[row][col] != 'x':
-                total += int(grid[row][col])
-    return total
-
-
-def find_bingo(draws, grids):
+def find_bingo(filename):
+    lines = read_input(filename)
+    draws, boards = generate_boards(lines)
     for draw in draws:
-        for grid in grids:
-            if marked_field(draw, grid) and is_winner(grid):
-                return sum_non_marked(grid) * int(draw)
+        for board in boards:
+            if board.contains(draw) and board.is_marked_and_winner(draw):
+                return board.sum_non_marked() * int(draw)
 
 
-def find_bingo2(draws, grids):
-    already_won = set()
+def find_bingo2(filename):
+    lines = read_input(filename)
+    draws, boards = generate_boards(lines)
     latest = 0
     for draw in draws:
-        for index, grid in enumerate(grids):
-            if index in already_won:
+        for index, board in enumerate(boards):
+            if board.already_won:
                 continue
-            if marked_field(draw, grid) and is_winner(grid):
-                latest = sum_non_marked(grid) * int(draw)
-                already_won.add(index)
+            if board.contains(draw) and board.is_marked_and_winner(draw):
+                latest = board.sum_non_marked() * int(draw)
     return latest
 
 
-def execute(filename):
-    lines = read_input(filename)
-    draws = lines[0].split(',')
-    grids = generate_grids(lines[1:])
-    return find_bingo(draws, grids), find_bingo2(draws, grids)
-
-
 if __name__ == '__main__':
-    print(execute("input-2.txt"))
+    print(find_bingo("input.txt"), find_bingo2("input.txt"))
