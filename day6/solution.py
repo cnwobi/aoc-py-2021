@@ -1,3 +1,4 @@
+import math
 from collections import Counter, defaultdict
 
 from read_input import read_input
@@ -21,5 +22,18 @@ def star_fish_in_days(filename, days):
     return sum(v for v in current_generation.values())
 
 
+def power(n, m):
+    return fast_power(1 / n, abs(m)) if m < 0 else fast_power(n, m)
+
+
+def fast_power(n, m):
+    if m == 0:
+        return 1
+    half = fast_power(n, m // 2)
+    return half ** 2 if m % 2 == 0 else (half ** 2) * n
+
+
 if __name__ == '__main__':
-    print(star_fish_in_days("input.txt", 80), star_fish_in_days("input.txt", 256))
+    print(power(4, 2))
+
+    # print(star_fish_in_days("input.txt", 80), star_fish_in_days("input.txt", 256))
