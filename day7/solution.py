@@ -31,6 +31,7 @@ def minimum_fuel_cost_2(input_array):
         for current_position in unique_positions:
             pair_max += (sum_natural_numbers(abs(current_position - anchor_position)) *
                          position_frequency[current_position])
+
         global_max = min(global_max, pair_max)
 
     return global_max
