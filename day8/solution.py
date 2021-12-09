@@ -43,8 +43,7 @@ def generate_mapping(zero, one, four, six, seven, eight, nine):
     mapping = {'a': get(seven.difference(one)),
                'd': get(eight.difference(zero)),
                'e': get(eight.difference(nine)),
-               'g': get(nine.difference(four).difference(seven))
-               }
+               'g': get(nine.difference(four).difference(seven))}
     missing_in_six = get(eight.difference(six))
     mapping['c'] = missing_in_six
     mapping['f'] = get(one.difference(missing_in_six))
@@ -68,10 +67,10 @@ def get_digits(signals):
 
 
 def process_line(line):
-    digits = list(map(frozenset, line[1].split()))
+    digits_str = list(map(frozenset, line[1].split()))
     signals = list(map(frozenset, line[0].split()))
     segment_digits = {x: index for index, x in enumerate(get_digits(signals))}
-    return int(''.join(list(map(lambda segment: str(segment_digits[segment]), digits))))
+    return int(''.join(list(map(lambda segment: str(segment_digits[segment]), digits_str))))
 
 
 def sum_decoded_values(filename):
