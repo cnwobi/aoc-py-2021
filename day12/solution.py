@@ -18,41 +18,43 @@ def seen_twice(seen):
     return len([x for x in seen.values() if x == 2]) > 0
 
 
-def paths_in_cave_small_caves_at_most_once(graph, key='start', seen=set(), path="start", result=[]):
-    if key in seen:
+def paths_in_cave_small_caves_at_most_once(graph, node='start', seen=set(), path="start", result=0):
+    if node in seen:
         return result
 
-    if key == "end":
-        result.append(path)
-        return result
+    if node == "end":
+        return result + 1
 
-    if key.islower() or key == 'start':
-        seen.add(key)
+    if node.islower() or node == 'start':
+        seen.add(node)
 
-    for child in graph[key]:
+    for child in graph[node]:
         result = paths_in_cave_small_caves_at_most_once(graph, child, seen, path + "-" + child, result)
 
-    if key in seen:
-        seen.remove(key)
+    if node in seen:
+        seen.remove(node)
 
     return result
 
 
-def paths_in_cave_small_caves_at_most_twice(graph, key='start', seen=defaultdict(int), path="start", result=0):
-    if key in seen and (seen_twice(seen) or key == 'start'):
+def paths_in_cave_small_caves_at_most_twice(graph, key='start', seen=defaultdict(int), visited_any_small_cave_twice=[False], result=0):
+    if key in seen and (visited_any_small_cave_twice[0] or key == 'start'):
         return result
 
     if key == "end":
-        result.append(path)
-        return result
+        return result + 1
 
-    if key.islower() or key == 'start':
+    if key.islower():
         seen[key] += 1
+        if seen[key] == 2:
+            visited_any_small_cave_twice[0] = True
 
     for child in graph[key]:
-        result = paths_in_cave_small_caves_at_most_twice(graph, child, seen, path + "-" + child, result)
+        result = paths_in_cave_small_caves_at_most_twice(graph, child, seen, visited_any_small_cave_twice, result)
 
     if key in seen:
+        if seen[key] == 2:
+            visited_any_small_cave_twice[0] = False
         seen[key] -= 1
         if seen[key] == 0:
             del seen[key]
@@ -60,4 +62,5 @@ def paths_in_cave_small_caves_at_most_twice(graph, key='start', seen=defaultdict
 
 
 if __name__ == '__main__':
-    print(len(paths_in_cave_small_caves_at_most_twice(parse_line('input.txt'))))
+    print(paths_in_cave_small_caves_at_most_once(parse_line('input.txt')))
+    print(paths_in_cave_small_caves_at_most_twice(parse_line('input.txt')))
