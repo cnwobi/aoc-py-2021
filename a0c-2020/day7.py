@@ -3,6 +3,7 @@ import re
 from read_input import read_input
 
 
+
 def parse_input(filename):
     lines = read_input(filename)
     graph = {}
@@ -11,6 +12,7 @@ def parse_input(filename):
         if "no other bags" in line:
             continue
         tokens = re.findall("\\d*\\s*(\\w+ \\w+) bags?", line)
+        insts = re.findall("\\w+ \\w+ (x|y)=(\\d+)", 'fold along y=447')
         graph[tokens[0]] = tokens[1:]
 
     return graph

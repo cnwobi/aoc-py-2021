@@ -36,4 +36,4 @@ def fast_power(n, m):
 if __name__ == '__main__':
     print(power(4, 2))
 
-    # print(star_fish_in_days("small.txt", 80), star_fish_in_days("small.txt", 256))
+    # print(star_fish_in_days("input.txt", 80), star_fish_in_days("input.txt", 256))
